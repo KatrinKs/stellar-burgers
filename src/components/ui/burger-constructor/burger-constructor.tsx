@@ -1,103 +1,90 @@
 import React, { FC } from 'react';
 import {
   Button,
-  ConstructorElement,
-  CurrencyIcon
+  CurrencyIcon,
+  ConstructorElement
 } from '@zlden/react-developer-burger-ui-components';
+
 import styles from './burger-constructor.module.css';
 import { BurgerConstructorUIProps } from './type';
-import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorElement, Modal } from '@components';
-import { Preloader, OrderDetailsUI } from '@ui';
+import { OrderDetailsUI } from '@ui';
 
 export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
-  constructorItems,
-  orderRequest,
   price,
+  orderRequest,
+  constructorItems,
   orderModalData,
   onOrderClick,
   closeOrderModal
 }) => (
   <section className={styles.burger_constructor}>
-    {constructorItems.bun ? (
-      <div className={`${styles.element} mb-4 mr-4`}>
-        <ConstructorElement
-          type='top'
-          isLocked
-          text={`${constructorItems.bun.name} (верх)`}
-          price={constructorItems.bun.price}
-          thumbnail={constructorItems.bun.image}
-        />
+    <div className={`${styles.elements} mt-25 mb-10`}>
+      <div className='pl-8 pr-4'>
+        {constructorItems.bun ? (
+          <ConstructorElement
+            type='top'
+            isLocked
+            text={`${constructorItems.bun.name} (верх)`}
+            price={constructorItems.bun.price}
+            thumbnail={constructorItems.bun.image}
+          />
+        ) : (
+          <div className={`${styles.noBuns} ${styles.noBunsTop}`}>
+            Выберите булку
+          </div>
+        )}
       </div>
-    ) : (
-      <div
-        className={`${styles.noBuns} ${styles.noBunsTop} ml-8 mb-4 mr-5 text text_type_main-default`}
-      >
-        Выберите булки
-      </div>
-    )}
-    <ul className={styles.elements}>
-      {constructorItems.ingredients.length > 0 ? (
-        constructorItems.ingredients.map(
-          (item: TConstructorIngredient, index: number) => (
+
+      <div className='mt-4 mb-4 pr-2'>
+        {constructorItems.ingredients.length > 0 ? (
+          constructorItems.ingredients.map((item, index) => (
             <BurgerConstructorElement
               ingredient={item}
               index={index}
               totalItems={constructorItems.ingredients.length}
               key={item.id}
             />
-          )
-        )
-      ) : (
-        <div
-          className={`${styles.noBuns} ml-8 mb-4 mr-5 text text_type_main-default`}
-        >
-          Выберите начинку
-        </div>
-      )}
-    </ul>
-    {constructorItems.bun ? (
-      <div className={`${styles.element} mt-4 mr-4`}>
-        <ConstructorElement
-          type='bottom'
-          isLocked
-          text={`${constructorItems.bun.name} (низ)`}
-          price={constructorItems.bun.price}
-          thumbnail={constructorItems.bun.image}
-        />
+          ))
+        ) : (
+          <div className={styles.noBuns}>Добавьте ингредиенты</div>
+        )}
       </div>
-    ) : (
-      <div
-        className={`${styles.noBuns} ${styles.noBunsBottom} ml-8 mb-4 mr-5 text text_type_main-default`}
-      >
-        Выберите булки
+
+      <div className='pl-8 pr-4'>
+        {constructorItems.bun ? (
+          <ConstructorElement
+            type='bottom'
+            isLocked
+            text={`${constructorItems.bun.name} (низ)`}
+            price={constructorItems.bun.price}
+            thumbnail={constructorItems.bun.image}
+          />
+        ) : (
+          <div className={`${styles.noBuns} ${styles.noBunsBottom}`}>
+            Выберите булку
+          </div>
+        )}
       </div>
-    )}
+    </div>
+
     <div className={`${styles.total} mt-10 mr-4`}>
-      <div className={`${styles.cost} mr-10`}>
-        <p className={`text ${styles.text} mr-2`}>{price}</p>
-        <CurrencyIcon type='primary' />
-      </div>
+      <p className={`${styles.cost} text text_type_digits-medium mr-10`}>
+        {price} <CurrencyIcon type='primary' />
+      </p>
       <Button
         htmlType='button'
         type='primary'
         size='large'
-        children='Оформить заказ'
         onClick={onOrderClick}
-      />
+        disabled={orderRequest || !constructorItems.bun}
+      >
+        {orderRequest ? 'Заказ оформляется...' : 'Оформить заказ'}
+      </Button>
     </div>
 
-    {orderRequest && (
-      <Modal onClose={closeOrderModal} title={'Оформляем заказ...'}>
-        <Preloader />
-      </Modal>
-    )}
-
     {orderModalData && (
-      <Modal
-        onClose={closeOrderModal}
-        title={orderRequest ? 'Оформляем заказ...' : ''}
-      >
+      <Modal title='' onClose={closeOrderModal}>
         <OrderDetailsUI orderNumber={orderModalData.number} />
       </Modal>
     )}

@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './order-details.module.css';
-import doneImg from '../../../images/done.svg';
 import { OrderDetailsUIProps } from './type';
+import doneImg from '../../../images/done.svg';
 
 export const OrderDetailsUI: React.FC<OrderDetailsUIProps> = ({
   orderNumber
