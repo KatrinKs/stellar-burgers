@@ -12,3 +12,5 @@ export const rootReducer = combineReducers({
   auth: authReducer,
   feed: feedReducer
 });
+
+export type RootState = ReturnType<typeof rootReducer>;
