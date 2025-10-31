@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import styles from './app-header.module.css';
 import { TAppHeaderUIProps } from './type';
 import {
@@ -26,7 +26,7 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => {
     <header className={styles.header}>
       <nav className={`${styles.menu} p-4`}>
         <div className={styles.menu_part_left}>
-          <Link
+          <NavLink
             to='/'
             className={`${styles.link} ${
               isActiveLink('/', true) ? styles.link_active : ''
@@ -36,8 +36,8 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => {
             <p className='text text_type_main-default ml-2 mr-10'>
               Конструктор
             </p>
-          </Link>
-          <Link
+          </NavLink>
+          <NavLink
             to='/feed'
             className={`${styles.link} ${
               isActiveLink('/feed') ? styles.link_active : ''
@@ -45,14 +45,14 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => {
           >
             <ListIcon type={getIconType('/feed')} />
             <p className='text text_type_main-default ml-2'>Лента заказов</p>
-          </Link>
+          </NavLink>
         </div>
         <div className={styles.logo}>
-          <Link to='/'>
+          <NavLink to='/'>
             <Logo className='' />
-          </Link>
+          </NavLink>
         </div>
-        <Link
+        <NavLink
           to='/profile'
           className={`${styles.link_position_last} ${
             isActiveLink('/profile') ? styles.link_active : ''
@@ -62,7 +62,7 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => {
           <p className='text text_type_main-default ml-2'>
             {userName || 'Личный кабинет'}
           </p>
-        </Link>
+        </NavLink>
       </nav>
     </header>
   );

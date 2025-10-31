@@ -50,14 +50,7 @@ const App = () => {
         <Route
           path='/ingredients/:id'
           element={
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh'
-              }}
-            >
+            <div className={styles.detailPageWrap}>
               <IngredientDetails />
             </div>
           }
@@ -65,14 +58,7 @@ const App = () => {
         <Route
           path='/feed/:number'
           element={
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh'
-              }}
-            >
+            <div className={styles.detailPageWrap}>
               <OrderInfo />
             </div>
           }
@@ -131,14 +117,7 @@ const App = () => {
           path='/profile/orders/:number'
           element={
             <ProtectedRoute>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  height: '100vh'
-                }}
-              >
+              <div className={styles.detailPageWrap}>
                 <OrderInfo />
               </div>
             </ProtectedRoute>

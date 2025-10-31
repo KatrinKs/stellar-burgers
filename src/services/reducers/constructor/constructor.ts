@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { v4 as uuidv4 } from 'uuid';
 import { TIngredient, TConstructorIngredient } from '@utils-types';
 
 type TConstructorState = {
@@ -23,7 +24,7 @@ const constructorSlice = createSlice({
         state.ingredients.push(action.payload);
       },
       prepare: (ingredient: TIngredient) => {
-        const id = `${ingredient._id}-${Date.now()}`;
+        const id = uuidv4();
         return { payload: { ...ingredient, id } };
       }
     },
