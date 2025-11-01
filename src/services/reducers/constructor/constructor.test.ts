@@ -74,7 +74,7 @@ describe('Burger Constructor Reducer', () => {
     expect(state.ingredients).toHaveLength(0);
   });
 
-  it('should handle moveIngredient', () => {
+  it('should handle moveIngredient with valid indices', () => {
     const ingredient1 = { ...mockIngredient, _id: '1' };
     const ingredient2 = { ...mockIngredient, _id: '2' };
 
@@ -100,5 +100,63 @@ describe('Burger Constructor Reducer', () => {
 
     state = constructorReducer(state, addBun(secondBun));
     expect(state.bun?._id).toBe('bun2');
+  });
+
+  it('should handle removing ingredient from empty constructor', () => {
+    const action = removeIngredient('non-existent-id');
+    const state = constructorReducer(initialState, action);
+
+    expect(state.ingredients).toHaveLength(0);
+  });
+
+  it('should handle moving ingredient with invalid fromIndex (negative)', () => {
+    const addAction = addIngredient(mockIngredient);
+    let state = constructorReducer(initialState, addAction);
+
+    const moveAction = moveIngredient({ fromIndex: -1, toIndex: 0 });
+    state = constructorReducer(state, moveAction);
+
+    expect(state.ingredients).toHaveLength(1);
+    expect(state.ingredients[0]._id).toBe('2');
+  });
+
+  it('should handle moving ingredient with invalid toIndex (out of bounds)', () => {
+    const addAction = addIngredient(mockIngredient);
+    let state = constructorReducer(initialState, addAction);
+
+    const moveAction = moveIngredient({ fromIndex: 0, toIndex: 5 });
+    state = constructorReducer(state, moveAction);
+
+    expect(state.ingredients).toHaveLength(1);
+    expect(state.ingredients[0]._id).toBe('2');
+  });
+
+  it('should handle moving ingredient when only one exists', () => {
+    const addAction = addIngredient(mockIngredient);
+    let state = constructorReducer(initialState, addAction);
+
+    const moveAction = moveIngredient({ fromIndex: 0, toIndex: 0 });
+    state = constructorReducer(state, moveAction);
+
+    expect(state.ingredients).toHaveLength(1);
+    expect(state.ingredients[0]._id).toBe('2');
+  });
+
+  it('should not modify state when moving ingredients in empty constructor', () => {
+    const moveAction = moveIngredient({ fromIndex: 0, toIndex: 1 });
+    const state = constructorReducer(initialState, moveAction);
+
+    expect(state.ingredients).toHaveLength(0);
+  });
+
+  it('should handle moving ingredient with both indices invalid', () => {
+    const addAction = addIngredient(mockIngredient);
+    let state = constructorReducer(initialState, addAction);
+
+    const moveAction = moveIngredient({ fromIndex: -1, toIndex: 5 });
+    state = constructorReducer(state, moveAction);
+
+    expect(state.ingredients).toHaveLength(1);
+    expect(state.ingredients[0]._id).toBe('2');
   });
 });

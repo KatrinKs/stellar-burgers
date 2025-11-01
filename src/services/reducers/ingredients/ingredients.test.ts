@@ -85,7 +85,7 @@ describe('Ingredients Reducer', () => {
       ingredients: mockIngredients,
       isLoading: false,
       error: null,
-      lastFetched: Date.now() 
+      lastFetched: Date.now()
     };
 
     const newState = ingredientsReducer(existingState, {

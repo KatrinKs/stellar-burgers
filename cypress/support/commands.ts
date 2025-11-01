@@ -1,37 +1,54 @@
 /// <reference types="cypress" />
-// ***********************************************
-// This example commands.ts shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-//
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      addIngredient(ingredientType: string): Chainable<void>;
+      
+      createOrder(): Chainable<void>;
+      
+      waitForIngredients(): Chainable<void>;
+
+      checkConstructorState(): Chainable<void>;
+    }
+  }
+}
+
+Cypress.Commands.add('addIngredient', (ingredientType: string) => {
+  cy.get(`[data-testid=ingredient-${ingredientType}]`).first().within(() => {
+    cy.get('button').contains('Добавить').click();
+  });
+});
+
+Cypress.Commands.add('createOrder', () => {
+  cy.window().then(($win) => {
+    $win.localStorage.setItem('refreshToken', 'test-refresh-token');
+  });
+  cy.setCookie('accessToken', 'test-access-token');
+
+  cy.addIngredient('bun');
+  cy.addIngredient('main');
+
+  cy.get('[data-testid=order-button]').should('not.be.disabled');
+  cy.get('[data-testid=order-button]').click();
+  
+  cy.wait('@createOrder');
+});
+
+Cypress.Commands.add('waitForIngredients', () => {
+  cy.wait('@getIngredients');
+});
+
+Cypress.Commands.add('checkConstructorState', () => {
+  cy.get('body').then(($body) => {
+    const hasBunTop = $body.find('[data-testid=constructor-bun-top]').length > 0;
+    const hasBunBottom = $body.find('[data-testid=constructor-bun-bottom]').length > 0;
+    const hasIngredients = $body.find('[data-testid=constructor-ingredient]').length > 0;
+    
+    cy.log(`Состояние конструктора - Булки (верх): ${hasBunTop}, Булки (низ): ${hasBunBottom}, Ингредиенты: ${hasIngredients}`);
+    
+    return cy.wrap({ hasBunTop, hasBunBottom, hasIngredients });
+  });
+});
+
+export {};
