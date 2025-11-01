@@ -25,6 +25,10 @@ export const initialState: TAuthState = {
   updateUserError: null
 };
 
+interface ApiError {
+  message: string;
+}
+
 export const registerUser = createAsyncThunk(
   'auth/register',
   async (userData: TRegisterData, { rejectWithValue }) => {
@@ -33,8 +37,10 @@ export const registerUser = createAsyncThunk(
       setCookie('accessToken', response.accessToken);
       localStorage.setItem('refreshToken', response.refreshToken);
       return response.user;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Ошибка при регистрации');
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Ошибка при регистрации';
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -47,8 +53,10 @@ export const loginUser = createAsyncThunk(
       setCookie('accessToken', response.accessToken);
       localStorage.setItem('refreshToken', response.refreshToken);
       return response.user;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Ошибка при входе');
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Ошибка при входе';
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -62,8 +70,12 @@ export const checkUserAuth = createAsyncThunk(
         return response.user;
       }
       throw new Error('No access token');
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Ошибка при проверке авторизации';
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -74,8 +86,10 @@ export const updateUser = createAsyncThunk(
     try {
       const response = await updateUserApi(userData);
       return response.user;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Ошибка при обновлении данных');
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Ошибка при обновлении данных';
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -87,8 +101,11 @@ export const logoutUser = createAsyncThunk(
       await logoutApi();
       deleteCookie('accessToken');
       localStorage.removeItem('refreshToken');
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Ошибка при выходе');
+      return undefined;
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Ошибка при выходе';
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -111,12 +128,15 @@ const authSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(registerUser.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.user = action.payload;
-        state.isAuthChecked = true;
-        state.error = null;
-      })
+      .addCase(
+        registerUser.fulfilled,
+        (state, action: PayloadAction<TUser>) => {
+          state.isLoading = false;
+          state.user = action.payload;
+          state.isAuthChecked = true;
+          state.error = null;
+        }
+      )
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
@@ -125,7 +145,7 @@ const authSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(loginUser.fulfilled, (state, action) => {
+      .addCase(loginUser.fulfilled, (state, action: PayloadAction<TUser>) => {
         state.isLoading = false;
         state.user = action.payload;
         state.isAuthChecked = true;
@@ -138,12 +158,15 @@ const authSlice = createSlice({
       .addCase(checkUserAuth.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(checkUserAuth.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.user = action.payload;
-        state.isAuthChecked = true;
-        state.error = null;
-      })
+      .addCase(
+        checkUserAuth.fulfilled,
+        (state, action: PayloadAction<TUser>) => {
+          state.isLoading = false;
+          state.user = action.payload;
+          state.isAuthChecked = true;
+          state.error = null;
+        }
+      )
       .addCase(checkUserAuth.rejected, (state) => {
         state.isLoading = false;
         state.isAuthChecked = true;
@@ -152,7 +175,7 @@ const authSlice = createSlice({
       .addCase(updateUser.pending, (state) => {
         state.updateUserError = null;
       })
-      .addCase(updateUser.fulfilled, (state, action) => {
+      .addCase(updateUser.fulfilled, (state, action: PayloadAction<TUser>) => {
         state.user = action.payload;
         state.updateUserError = null;
       })

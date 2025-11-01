@@ -9,7 +9,11 @@ declare global {
       
       waitForIngredients(): Chainable<void>;
 
-      checkConstructorState(): Chainable<void>;
+      checkConstructorState(): Chainable<{
+        hasBunTop: boolean;
+        hasBunBottom: boolean;
+        hasIngredients: boolean;
+      }>;
     }
   }
 }
@@ -21,8 +25,8 @@ Cypress.Commands.add('addIngredient', (ingredientType: string) => {
 });
 
 Cypress.Commands.add('createOrder', () => {
-  cy.window().then(($win) => {
-    $win.localStorage.setItem('refreshToken', 'test-refresh-token');
+  cy.window().then((win: Window) => {
+    win.localStorage.setItem('refreshToken', 'test-refresh-token');
   });
   cy.setCookie('accessToken', 'test-access-token');
 
@@ -40,14 +44,18 @@ Cypress.Commands.add('waitForIngredients', () => {
 });
 
 Cypress.Commands.add('checkConstructorState', () => {
-  cy.get('body').then(($body) => {
+  return cy.get('body').then(($body: JQuery<HTMLBodyElement>) => {
     const hasBunTop = $body.find('[data-testid=constructor-bun-top]').length > 0;
     const hasBunBottom = $body.find('[data-testid=constructor-bun-bottom]').length > 0;
     const hasIngredients = $body.find('[data-testid=constructor-ingredient]').length > 0;
     
     cy.log(`Состояние конструктора - Булки (верх): ${hasBunTop}, Булки (низ): ${hasBunBottom}, Ингредиенты: ${hasIngredients}`);
     
-    return cy.wrap({ hasBunTop, hasBunBottom, hasIngredients });
+    return {
+      hasBunTop,
+      hasBunBottom,
+      hasIngredients
+    };
   });
 });
 

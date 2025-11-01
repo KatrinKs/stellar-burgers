@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getIngredientsApi } from '../../../utils/burger-api';
 import { TIngredient } from '@utils-types';
+import { RootState } from '../index';
 
 export type TIngredientsState = {
   ingredients: TIngredient[];
@@ -19,11 +20,10 @@ export const initialState: TIngredientsState = {
 export const fetchIngredients = createAsyncThunk(
   'ingredients/fetchAll',
   async (_, { getState }) => {
-    const state = getState() as any;
+    const state = getState() as RootState;
     const lastFetched = state.ingredients.lastFetched;
     const now = Date.now();
 
-    // Если данные были загружены менее 5 минут назад, не делаем новый запрос
     if (lastFetched && now - lastFetched < 5 * 60 * 1000) {
       return state.ingredients.ingredients;
     }

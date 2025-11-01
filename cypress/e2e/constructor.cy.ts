@@ -32,7 +32,7 @@ describe('Burger Constructor', () => {
     cy.addIngredient('bun');
     cy.addIngredient('main');
     
-    cy.get('body').then(($body) => {
+    cy.get('body').then(($body: JQuery<HTMLBodyElement>) => {
       const bunTop = $body.find('[data-testid=constructor-bun-top]').length;
       const bunBottom = $body.find('[data-testid=constructor-bun-bottom]').length;
       const ingredients = $body.find('[data-testid=constructor-ingredient]').length;
@@ -43,7 +43,7 @@ describe('Burger Constructor', () => {
     cy.get('[data-testid=constructor-bun-top]').should('exist');
     cy.get('[data-testid=constructor-bun-bottom]').should('exist');
     
-    cy.get('body').then(($body) => {
+    cy.get('body').then(($body: JQuery<HTMLBodyElement>) => {
       if ($body.find('[data-testid=constructor-ingredient]').length > 0) {
         cy.get('[data-testid=constructor-ingredient]').should('exist');
       } else {
@@ -82,7 +82,7 @@ describe('Burger Constructor', () => {
     cy.get('[data-testid=modal-close]').click();
     cy.get('[data-testid=order-modal]').should('not.exist');
     
-    cy.get('body').then(($body) => {
+    cy.get('body').then(($body: JQuery<HTMLBodyElement>) => {
       const hasBunTop = $body.find('[data-testid=constructor-bun-top]').length > 0;
       const hasBunBottom = $body.find('[data-testid=constructor-bun-bottom]').length > 0;
       const hasIngredients = $body.find('[data-testid=constructor-ingredient]').length > 0;
@@ -107,8 +107,8 @@ describe('Burger Constructor', () => {
   });
 
   it('should handle order creation without ingredients', () => {
-    cy.window().then(($win) => {
-      $win.localStorage.setItem('refreshToken', 'test-refresh-token');
+    cy.window().then((win: Window) => {
+      win.localStorage.setItem('refreshToken', 'test-refresh-token');
     });
     cy.setCookie('accessToken', 'test-access-token');
 
